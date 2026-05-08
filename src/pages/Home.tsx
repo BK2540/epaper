@@ -1,12 +1,16 @@
-import CustomButton from "@/components/CustomButton";
-import Input from "@/components/Input";
+import FaqSection from "@/components/FaqSection";
+import ProductCarousel from "@/components/ProductCarousel";
+import ReadEpaperSection from "@/components/ReadEpaperSection";
+import SubscribeSection from "@/components/SubscribeSection";
+import { ourProducts } from "@/data/home";
 
 const Home = () => {
   return (
     <div>
-      Home
-      <CustomButton title="Test" onClick={() => {}} size="small" />
-      <Input variant="expiry" label="expiry" />
+      <ProductCarousel products={ourProducts} />
+      <SubscribeSection />
+      <ReadEpaperSection />
+      <FaqSection />
     </div>
   );
 };
