@@ -2,7 +2,7 @@ import FaqSection from "@/components/FaqSection";
 import ProductCarousel from "@/components/ProductCarousel";
 import ReadEpaperSection from "@/components/ReadEpaperSection";
 import SubscribeSection from "@/components/SubscribeSection";
-import { epaper, ourProducts, subscribePlan } from "@/data/home";
+import { epaper, faqs, ourProducts, subscribePlan } from "@/data/home";
 
 const Home = () => {
   return (
@@ -10,7 +10,7 @@ const Home = () => {
       <ProductCarousel products={ourProducts} />
       <SubscribeSection contents={subscribePlan} />
       <ReadEpaperSection contents={epaper} />
-      <FaqSection />
+      <FaqSection contents={faqs} />
     </>
   );
 };
