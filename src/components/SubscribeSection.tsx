@@ -75,7 +75,7 @@ const SubscribeSection = ({ contents }: SubscribeProps) => {
       id="subscribe"
       className="mt-[72px] mb-[58px] px-6 xl:px-[195px] 2xl:max-w-[1280px] w-full lg:min-w-[280px] flex flex-col items-center gap-10"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-[26px] w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[26px] w-full lg:min-w-[280px]">
         {contents.map((content) => (
           // <SubscribeCard key={content.id} content={content} />
           <SubscribeCard
