@@ -10,7 +10,7 @@ const CustomButton = ({ title, size, onClick, type }: ButtonType) => {
     <button
       type={type ? type : "button"}
       onClick={onClick}
-      className={`${size === "small" ? "h-10 text-[15px] leading-5" : "h-12.5 text-xl leading-5"} rounded-[5px] bg-black flex justify-center items-center text-white font-['DM_Serif_Text']  min-w-26`}
+      className={`${size === "small" ? "h-10 text-[15px] leading-5 px-5" : "h-12.5 text-xl leading-5 px-18"} rounded-[5px] bg-black flex justify-center items-center text-white font-['DM_Serif_Text']  min-w-26`}
     >
       {title}
     </button>

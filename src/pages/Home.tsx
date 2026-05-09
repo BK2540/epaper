@@ -2,16 +2,16 @@ import FaqSection from "@/components/FaqSection";
 import ProductCarousel from "@/components/ProductCarousel";
 import ReadEpaperSection from "@/components/ReadEpaperSection";
 import SubscribeSection from "@/components/SubscribeSection";
-import { ourProducts } from "@/data/home";
+import { epaper, ourProducts, subscribePlan } from "@/data/home";
 
 const Home = () => {
   return (
-    <div>
+    <>
       <ProductCarousel products={ourProducts} />
-      <SubscribeSection />
-      <ReadEpaperSection />
+      <SubscribeSection contents={subscribePlan} />
+      <ReadEpaperSection contents={epaper} />
       <FaqSection />
-    </div>
+    </>
   );
 };
 
