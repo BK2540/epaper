@@ -58,6 +58,7 @@ const getInputProps = (variant: InputVariant) => {
       autoComplete: "cc-csc",
       inputMode: "numeric" as const,
       placeholder: "\u2022\u2022\u2022",
+      type: "password",
     };
   }
 
