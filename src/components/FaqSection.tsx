@@ -29,10 +29,13 @@ const FaqSection = ({ contents }: FaqProps) => {
                 key={content.id}
                 className={isLast ? "" : "border-b border-neutral-500"}
               >
-                <button
+                <motion.button
                   type="button"
                   aria-expanded={isOpen}
                   className="flex w-full items-start justify-between gap-6 py-4 text-left"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  transition={{ type: "spring", stiffness: 320, damping: 28 }}
                   onClick={() =>
                     setOpenId((currentId) =>
                       currentId === content.id ? "" : content.id,
@@ -43,14 +46,14 @@ const FaqSection = ({ contents }: FaqProps) => {
                     {index + 1}. "{content.question}"
                   </span>
                   <span
-                    className={`relative mt-1 h-[25px] w-[25px] shrink-0 transition-transform duration-200 ${
+                    className={`relative mt-1 h-[25px] w-[25px] shrink-0 transition-transform duration-200 cursor-pointer ${
                       isOpen ? "rotate-45" : "rotate-0"
                     }`}
                   >
                     <span className="absolute top-1/2 left-0 h-px w-full bg-black" />
                     <span className="absolute top-0 left-1/2 h-full w-px bg-black" />
                   </span>
-                </button>
+                </motion.button>
 
                 <AnimatePresence initial={false}>
                   {isOpen && (

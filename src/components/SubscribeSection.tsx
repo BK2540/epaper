@@ -2,6 +2,7 @@ import type { Subscribe } from "@/data/home";
 import { useState } from "react";
 import CustomButton from "./CustomButton";
 import { useNavigate } from "react-router-dom";
+import { motion } from "motion/react";
 
 type SubscribeProps = {
   contents: Subscribe[];
@@ -15,9 +16,14 @@ type SubscribeCardProps = {
 
 const SubscribeCard = ({ checked, content, onToggle }: SubscribeCardProps) => {
   return (
-    <div className="relative flex min-h-[145px] rounded-[3px] border border-neutral-300 bg-surface-white px-4 py-3 font-sans md:min-w-[220px] lg:min-w-[280px]">
+    <motion.label
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
+      className={`relative flex min-h-[145px] rounded-[3px] border  bg-surface-white px-4 py-3 font-sans md:min-w-[220px] lg:min-w-[280px] cursor-pointer hover:shadow-sm hover:border-blue-200 ${checked ? "border-neutral-200" : "border-neutral-300"}`}
+    >
       {/* radio */}
-      <label className="h-[22px] w-[22px] shrink-0 cursor-pointer">
+      <div className="h-[22px] w-[22px] shrink-0 cursor-pointer">
         <input
           type="radio"
           name="subscribe-plan"
@@ -31,7 +37,7 @@ const SubscribeCard = ({ checked, content, onToggle }: SubscribeCardProps) => {
             <span className="block h-full w-full rounded-full bg-black" />
           )}
         </span>
-      </label>
+      </div>
 
       <div className="-ml-[22px] grid w-full grid-rows-[44px_40px_20px] items-start mt-3">
         <p className="row-start-1 flex items-start justify-center whitespace-pre-line text-center font-sans text-[15px] font-normal leading-5 text-black">
@@ -63,7 +69,7 @@ const SubscribeCard = ({ checked, content, onToggle }: SubscribeCardProps) => {
           </p>
         </div>
       )}
-    </div>
+    </motion.label>
   );
 };
 

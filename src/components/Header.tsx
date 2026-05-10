@@ -1,20 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "@/assets/icon/bp-logo.svg";
 import { UserRound } from "lucide-react";
 
 const navLinks = [
-  { label: "Our product", href: "#" },
-  { label: "How to subscribe", href: "#" },
-  { label: "Read Epaper", href: "#" },
-  { label: "FAQ", href: "#" },
+  { label: "Our product", href: "#our-products" },
+  { label: "How to subscribe", href: "#subscribe" },
+  { label: "Read Epaper", href: "#epaper" },
+  { label: "FAQ", href: "#faq" },
   { label: "Account", href: "#" },
 ];
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isMenuOpen]);
+
   return (
-    <header className="relative z-10 w-full">
+    <header className="z-10 w-full fixed">
       <div className="flex h-20 w-full items-center justify-between bg-blue-600 px-5 sm:px-8 lg:px-13">
         <a href="#" aria-label="Bangkok Post home" className="shrink-0">
           <img
@@ -43,7 +56,7 @@ const Header = () => {
           type="button"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
-          className="flex h-12 w-12 items-center justify-center md:hidden"
+          className="flex h-12 w-12 items-center justify-center md:hidden cursor-pointer"
           onClick={() => setIsMenuOpen((open) => !open)}
         >
           <span className="relative block h-8 w-8">
@@ -73,7 +86,11 @@ const Header = () => {
         >
           <ul className="flex flex-col items-center gap-10 font-['DM_Sans'] text-[24px] leading-7 text-blue-600">
             <li>
-              <a href="#" className="flex items-center gap-3">
+              <a
+                href="#"
+                className="flex items-center gap-3"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 <div className="rounded-full h-8 w-8 border-2 flex justify-center items-center border-blue-600 p-1">
                   <UserRound />
                 </div>
@@ -86,6 +103,7 @@ const Header = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
                     className="text-blue-600 underline-offset-4 hover:underline"
                   >
                     {link.label === "Read Epaper" ? "Read now" : link.label}
