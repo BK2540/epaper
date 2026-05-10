@@ -97,7 +97,7 @@ const Input = ({
           {...props}
           aria-label={label ? props["aria-label"] : inputLabel}
           onChange={handleChange}
-          className="h-10 w-full rounded-[3px] border border-neutral-300 bg-surface-white px-3.75 text-[13px] leading-5 text-black outline-none transition-colors placeholder:text-[#757575] focus:border-neutral-600"
+          className="h-10 w-full rounded-[3px] border border-neutral-300 bg-surface-white px-3.75 text-[13px] leading-5 text-black outline-none transition-colors placeholder:text-placeholder focus:border-neutral-600"
         />
         {trailingIcon && (
           <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-neutral-600">

@@ -103,7 +103,7 @@ const Receipt = () => {
             </div>
           </dl>
 
-          <div className="mt-6 h-px w-full bg-[#D1D5DB]" />
+          <div className="mt-6 h-px w-full bg-neutral-350" />
 
           <dl className="mt-6 grid gap-3 font-sans text-[13px] leading-5">
             <div className="flex justify-between gap-4">
@@ -115,7 +115,7 @@ const Receipt = () => {
             {receiptDetails.discount > 0 && (
               <div className="flex justify-between gap-4">
                 <dt className="text-neutral-700">Discount</dt>
-                <dd className="text-right text-[#ff0000]">
+                <dd className="text-right text-danger">
                   - {formatBaht(receiptDetails.discount)}
                 </dd>
               </div>

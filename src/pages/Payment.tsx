@@ -48,8 +48,8 @@ const PaymentMethodOption = ({
       onClick={onClick}
       className={`flex h-[70px] w-[117px] flex-col items-start justify-center gap-1 rounded-[3px] border px-4 text-left font-sans text-[13px] leading-6 font-normal transition-colors ${
         isSelected
-          ? "border-2 border-[#527DFA] text-black bg-[#edf2fe]"
-          : "border-[#d8d8dd] text-black hover:border-blue-200"
+          ? "border-2 border-blue-500 text-black bg-blue-50"
+          : "border-neutral-border text-black hover:border-blue-200"
       }`}
     >
       <img src={icon} alt="" aria-hidden="true" className="h-6 w-6" />
@@ -205,11 +205,11 @@ const Payment = () => {
           </p>
           <div className="h-px bg-black w-full mt-3" />
 
-          <div className="mt-[22px] bg-[#EDF2FE] w-full flex flex-col items-center py-5 mb-6 px-4">
+          <div className="mt-[22px] bg-blue-50 w-full flex flex-col items-center py-5 mb-6 px-4">
             <p className="font-serif-display text-[18px] leading-5 text-black font-normal text-center">
               Epaper {selectedPlan.period}
             </p>
-            <p className="font-sans text-[13px] leading-5 text-[#6e6e6e] font-normal mt-2 text-center">
+            <p className="font-sans text-[13px] leading-5 text-neutral-650 font-normal mt-2 text-center">
               {selectedPlan.price.toLocaleString()} Baht for{" "}
               {selectedPlan.period}
               <br />
@@ -219,13 +219,13 @@ const Payment = () => {
 
           <a
             href="/#subscribe"
-            className="font-sans text-[13px] leading-5 text-[#346AEA] font-normal text-center underline"
+            className="font-sans text-[13px] leading-5 text-blue-link font-normal text-center underline"
           >
             Change plans
           </a>
 
           {/* redeem code */}
-          <div className="h-px bg-[#D1D5DB] w-full mt-6 mb-3" />
+          <div className="h-px bg-neutral-350 w-full mt-6 mb-3" />
           <div className="flex w-full items-center gap-2.5">
             <div className="min-w-0 flex-1">
               <Input
@@ -261,7 +261,7 @@ const Payment = () => {
               <p className="text-[15px] text-black font-sans leading-5 font-normal">
                 Discount:
               </p>
-              <p className="text-[13px] text-[#ff0000] font-sans leading-5 font-normal">
+              <p className="text-[13px] text-danger font-sans leading-5 font-normal">
                 - {discount.toLocaleString()} Baht
               </p>
             </div>
@@ -275,7 +275,7 @@ const Payment = () => {
             </p>
           </div>
 
-          <div className="h-px bg-[#D1D5DB] w-full mt-3" />
+          <div className="h-px bg-neutral-350 w-full mt-3" />
         </div>
 
         {/* payment method */}
@@ -285,7 +285,7 @@ const Payment = () => {
           </p>
           <div className="h-px bg-black w-full mt-3" />
 
-          <div className="bg-[#527DFA] px-[28px] py-[18px] flex justify-center items-center rounded-[3px]">
+          <div className="bg-blue-500 px-[28px] py-[18px] flex justify-center items-center rounded-[3px]">
             <p className="text-[15px] text-surface-white font-sans leading-5 font-normal text-center">
               After payment, you will be redirected to the information page.
               Please accept T&Cs
@@ -364,7 +364,7 @@ const Payment = () => {
           )}
 
           {showPaymentError && (
-            <p className="text-center font-sans text-[15px] font-normal leading-5 text-[#ff0000]">
+            <p className="text-center font-sans text-[15px] font-normal leading-5 text-danger">
               Please complete payment information before continuing.
             </p>
           )}

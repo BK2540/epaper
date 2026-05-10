@@ -36,8 +36,8 @@ function StyleSheet() {
                 width: 50px;
                 height: 50px;
                 border-radius: 50%;
-                border: 4px solid #D8D8DF;
-                border-top-color: #0054C6;
+                border: 4px solid var(--color-neutral-300);
+                border-top-color: var(--color-blue-600);
                 will-change: transform;
             }
             `}

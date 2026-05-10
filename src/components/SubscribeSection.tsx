@@ -128,7 +128,7 @@ const SubscribeSection = ({ contents }: SubscribeProps) => {
 
       <div className="flex flex-col gap-2.5 items-center">
         {showPlanError && (
-          <p className="text-center font-sans text-[15px] font-normal leading-5 text-[#ff0000]">
+          <p className="text-center font-sans text-[15px] font-normal leading-5 text-danger">
             No plan selected. Please choose one to continue.
           </p>
         )}
