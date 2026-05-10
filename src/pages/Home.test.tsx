@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import Home from "./Home";
 
 beforeAll(() => {
@@ -23,7 +24,9 @@ beforeAll(() => {
 const renderHome = () => {
   return render(
     <MemoryRouter>
-      <Home />
+      <SubscriptionProvider>
+        <Home />
+      </SubscriptionProvider>
     </MemoryRouter>,
   );
 };
@@ -37,18 +40,20 @@ const LocationDisplay = () => {
 const renderHomeWithRoutes = () => {
   return render(
     <MemoryRouter initialEntries={["/"]}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Home />
-              <LocationDisplay />
-            </>
-          }
-        />
-        <Route path="/payment" element={<LocationDisplay />} />
-      </Routes>
+      <SubscriptionProvider>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Home />
+                <LocationDisplay />
+              </>
+            }
+          />
+          <Route path="/payment" element={<LocationDisplay />} />
+        </Routes>
+      </SubscriptionProvider>
     </MemoryRouter>,
   );
 };
@@ -115,7 +120,7 @@ describe("Home", () => {
     expect(
       screen.getByText(/no plan selected\. please choose one to continue\./i),
     ).toBeInTheDocument();
-    expect(subscribeButton).toHaveClass("bg-surface-white", "text-black");
+    expect(subscribeButton).toHaveClass("bg-black", "text-white");
     expect(screen.getByTestId("current-path")).toHaveTextContent("/");
   });
 

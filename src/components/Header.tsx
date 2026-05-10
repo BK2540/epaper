@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import logo from "@/assets/icon/bp-logo.svg";
 import { UserRound } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const navLinks = [
   { label: "Our product", href: "#our-products" },
@@ -11,7 +12,34 @@ const navLinks = [
 ];
 
 const Header = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!location.hash) {
+      return;
+    }
+
+    const targetId = location.hash.replace("#", "");
+
+    window.setTimeout(() => {
+      const targetElement = document.getElementById(targetId);
+
+      if (!targetElement) {
+        return;
+      }
+
+      const headerOffset = 80;
+      const targetTop =
+        targetElement.getBoundingClientRect().top + window.scrollY;
+
+      window.scrollTo({
+        top: targetTop - headerOffset,
+        behavior: "smooth",
+      });
+    }, 0);
+  }, [location.hash, location.pathname]);
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -26,10 +54,37 @@ const Header = () => {
     };
   }, [isMenuOpen]);
 
+  const handleNavigate = (href: string) => {
+    setIsMenuOpen(false);
+
+    if (href === "#") {
+      navigate("/");
+      return;
+    }
+
+    if (href.startsWith("#")) {
+      navigate({
+        pathname: "/",
+        hash: href,
+      });
+      return;
+    }
+
+    navigate(href);
+  };
+
   return (
-    <header className="z-10 w-full fixed">
+    <header className="z-999 w-full fixed">
       <div className="flex h-20 w-full items-center justify-between bg-blue-600 px-5 sm:px-8 lg:px-13">
-        <a href="#" aria-label="Bangkok Post home" className="shrink-0">
+        <a
+          href="/"
+          aria-label="Bangkok Post home"
+          className="shrink-0"
+          onClick={(event) => {
+            event.preventDefault();
+            handleNavigate("/");
+          }}
+        >
           <img
             src={logo}
             alt="Bangkok Post"
@@ -45,6 +100,10 @@ const Header = () => {
             <a
               key={link.label}
               href={link.href}
+              onClick={(event) => {
+                event.preventDefault();
+                handleNavigate(link.href);
+              }}
               className="text-[15px] font-normal leading-5 text-surface-white transition-opacity hover:opacity-75"
             >
               {link.label}
@@ -87,9 +146,12 @@ const Header = () => {
           <ul className="flex flex-col items-center gap-10 font-['DM_Sans'] text-[24px] leading-7 text-blue-600">
             <li>
               <a
-                href="#"
+                href="/"
                 className="flex items-center gap-3"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(event) => {
+                  event.preventDefault();
+                  handleNavigate("/");
+                }}
               >
                 <div className="rounded-full h-8 w-8 border-2 flex justify-center items-center border-blue-600 p-1">
                   <UserRound />
@@ -103,7 +165,10 @@ const Header = () => {
                 <li key={link.label}>
                   <a
                     href={link.href}
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      handleNavigate(link.href);
+                    }}
                     className="text-blue-600 underline-offset-4 hover:underline"
                   >
                     {link.label === "Read Epaper" ? "Read now" : link.label}

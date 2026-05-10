@@ -1,5 +1,13 @@
 import { useState } from "react";
 import Input from "@/components/Input";
+import { Navigate } from "react-router-dom";
+import { useSubscription } from "@/context/subscription";
+import { Check } from "lucide-react";
+import CustomButton from "@/components/CustomButton";
+import CreditCardIcon from "@/assets/icon/credit.svg";
+import QrCodeIcon from "@/assets/icon/qr.svg";
+
+type PaymentMethod = "card" | "qr";
 
 const SecurityCodeIcon = () => {
   return (
@@ -17,42 +25,364 @@ const SecurityCodeIcon = () => {
   );
 };
 
+const PaymentMethodOption = ({
+  icon,
+  isSelected,
+  label,
+  onClick,
+}: {
+  icon: string;
+  isSelected: boolean;
+  label: string;
+  onClick: () => void;
+}) => {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex h-[70px] w-[117px] flex-col items-start justify-center gap-1 rounded-[3px] border px-4 text-left font-sans text-[13px] leading-6 font-normal transition-colors ${
+        isSelected
+          ? "border-2 border-[#527DFA] text-black bg-[#edf2fe]"
+          : "border-[#d8d8dd] text-black hover:border-blue-200"
+      }`}
+    >
+      <img src={icon} alt="" aria-hidden="true" className="h-6 w-6" />
+      <span>{label}</span>
+    </button>
+  );
+};
+
+const MockQrCode = ({ value }: { value: string }) => {
+  const cells = Array.from({ length: 21 * 21 }, (_, index) => {
+    const row = Math.floor(index / 21);
+    const column = index % 21;
+    const inTopLeft = row < 7 && column < 7;
+    const inTopRight = row < 7 && column > 13;
+    const inBottomLeft = row > 13 && column < 7;
+
+    if (inTopLeft || inTopRight || inBottomLeft) {
+      const localRow = row % 14;
+      const localColumn = column % 14;
+      return (
+        localRow === 0 ||
+        localRow === 6 ||
+        localColumn === 0 ||
+        localColumn === 6 ||
+        (localRow >= 2 && localRow <= 4 && localColumn >= 2 && localColumn <= 4)
+      );
+    }
+
+    const seed = value.charCodeAt(index % value.length) || 0;
+    return (row * 3 + column * 5 + seed) % 7 < 3;
+  });
+
+  return (
+    <div className="flex flex-col items-center rounded-[3px] border border-neutral-300 px-6 py-7">
+      <svg
+        aria-label="Mock QR code"
+        className="h-[180px] w-[180px]"
+        viewBox="0 0 21 21"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect width="21" height="21" fill="white" />
+        {cells.map(
+          (isFilled, index) =>
+            isFilled && (
+              <rect
+                key={index}
+                x={index % 21}
+                y={Math.floor(index / 21)}
+                width="1"
+                height="1"
+                fill="black"
+              />
+            ),
+        )}
+      </svg>
+      <p className="mt-4 text-center font-sans text-[13px] leading-5 text-neutral-700">
+        this is mock QR code.
+      </p>
+    </div>
+  );
+};
+
+const paymentSteps = [
+  { id: "select-plan", label: "Select plan", status: "completed" },
+  { id: "payment", label: "Payment", status: "current" },
+  { id: "account-receipt", label: "Account & Receipt", status: "upcoming" },
+] as const;
+
+const PaymentStepIndicator = () => {
+  return (
+    <ol
+      aria-label="Payment progress"
+      className="relative mt-8 mb-9 grid w-full grid-cols-3"
+    >
+      <span
+        aria-hidden="true"
+        className="absolute left-[11px] right-[11px] top-[11px] h-px bg-blue-600"
+      />
+
+      {paymentSteps.map((step, index) => {
+        const isCompleted = step.status === "completed";
+        const isCurrent = step.status === "current";
+        const alignment =
+          index === 0
+            ? "items-start text-left"
+            : index === paymentSteps.length - 1
+              ? "items-end text-right"
+              : "items-center text-center";
+
+        return (
+          <li
+            key={step.id}
+            className={`relative z-10 flex flex-col gap-2 ${alignment}`}
+            aria-current={isCurrent ? "step" : undefined}
+          >
+            <span
+              className={`flex h-[22px] w-[22px] items-center justify-center rounded-full ${
+                isCompleted ? "bg-black" : "bg-blue-600"
+              }`}
+            >
+              {(isCompleted || isCurrent) && (
+                <Check
+                  aria-hidden="true"
+                  className="h-3.5 w-3.5 text-surface-white"
+                  strokeWidth={3}
+                />
+              )}
+            </span>
+            <span
+              className={`font-sans text-[11px] leading-5 text-black wrap-break-word ${step.id === "select-plan" && "-translate-x-3"} ${step.id === "account-receipt" && "md:translate-x-7"}`}
+            >
+              {step.label}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+};
+
 const Payment = () => {
+  const { selectedPlan } = useSubscription();
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [redeemCode, setRedeemCode] = useState("");
+  const [isRedeemApplied, setIsRedeemApplied] = useState(false);
   const [cardholderName, setCardholderName] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
+  const [showPaymentError, setShowPaymentError] = useState(false);
+
+  if (!selectedPlan) {
+    return <Navigate to="/" replace />;
+  }
+
+  const discount = isRedeemApplied ? selectedPlan.price * 0.1 : 0;
+  const total = selectedPlan.price - discount;
+
+  const handleApplyRedeemCode = () => {
+    setIsRedeemApplied(redeemCode.trim().toLowerCase() === "redeem");
+  };
+
+  const handleConfirmPayment = () => {
+    if (paymentMethod === "qr") {
+      setShowPaymentError(false);
+      return;
+    }
+
+    const isCardFormCompleted =
+      cardholderName.trim().length > 0 &&
+      cardNumber.replace(/\s/g, "").length >= 16 &&
+      expiryDate.length === 7 &&
+      cvv.length === 3;
+
+    setShowPaymentError(!isCardFormCompleted);
+  };
 
   return (
-    <section className="mx-auto w-full max-w-[640px] px-4 py-10">
-      <div className="space-y-4">
-        <Input
-          label="Cardholder Name"
-          value={cardholderName}
-          onChange={setCardholderName}
-          placeholder="Cardholder Name"
-        />
+    <section className="w-full h-full bg-surface-cream p-10 xl:px-[140px] xl:py-[96px]">
+      <div className="mx-auto w-full lg:max-w-[1000px] bg-surface-white px-6 py-10 sm:px-[100px] xl:px-[290px] xl:pt-[48px] xl:pb-[90px]">
+        <p className="text-[32px] leading-6 font-serif-text font-normal text-black text-center">
+          Payment Information
+        </p>
 
-        <Input
-          label="Card Number"
-          variant="cardNumber"
-          value={cardNumber}
-          onChange={setCardNumber}
-        />
+        <PaymentStepIndicator />
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <Input
-            label="Expiry Date"
-            variant="expiry"
-            value={expiryDate}
-            onChange={setExpiryDate}
-          />
-          <Input
-            label="CVV"
-            variant="cvv"
-            value={cvv}
-            onChange={setCvv}
-            trailingIcon={<SecurityCodeIcon />}
+        {/* Selected Plan */}
+        <div className="mt-10">
+          <p className="font-serif-display text-[18px] leading-5 text-black font-normal">
+            Order Item
+          </p>
+          <div className="h-px bg-black w-full mt-3" />
+
+          <div className="mt-[22px] bg-[#EDF2FE] w-full flex flex-col items-center py-5 mb-6">
+            <p className="font-serif-display text-[18px] leading-5 text-black font-normal">
+              Epaper {selectedPlan.period}
+            </p>
+            <p className="font-sans text-[13px] leading-5 text-[#6e6e6e] font-normal mt-2 text-center">
+              {selectedPlan.price.toLocaleString()} Baht for{" "}
+              {selectedPlan.period}
+              <br />
+              You can cancel anythime
+            </p>
+          </div>
+
+          <a
+            href="/"
+            className="font-sans text-[13px] leading-5 text-[#346AEA] font-normal text-center underline"
+          >
+            Change plans
+          </a>
+
+          {/* redeem code */}
+          <div className="h-px bg-[#D1D5DB] w-full mt-6 mb-3" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-full">
+              <Input
+                // label="Cardholder Name"
+                value={redeemCode}
+                onChange={(value) => {
+                  setRedeemCode(value);
+                  setIsRedeemApplied(false);
+                }}
+                placeholder="use redeem"
+              />
+            </div>
+
+            <CustomButton
+              title="APPLY"
+              onClick={handleApplyRedeemCode}
+              size="small"
+              font="sans"
+            />
+          </div>
+
+          <div className="w-full flex justify-between items-center mt-[30px]">
+            <p className="text-[15px] text-black font-sans leading-5 font-normal">
+              Price
+            </p>
+            <p className="text-[13px] text-black font-sans leading-5 font-normal">
+              {selectedPlan.price.toLocaleString()} Baht
+            </p>
+          </div>
+          {isRedeemApplied && (
+            <div className="w-full flex justify-between items-center mt-2.5">
+              <p className="text-[15px] text-black font-sans leading-5 font-normal">
+                Discount:
+              </p>
+              <p className="text-[13px] text-[#ff0000] font-sans leading-5 font-normal">
+                - {discount.toLocaleString()} Baht
+              </p>
+            </div>
+          )}
+          <div className="w-full flex justify-between items-center mt-2.5">
+            <p className="text-[15px] text-black font-serif-display leading-5 font-normal">
+              Total
+            </p>
+            <p className="text-[15px] text-black font-serif-display leading-5 font-normal">
+              {total.toLocaleString()} Baht
+            </p>
+          </div>
+
+          <div className="h-px bg-[#D1D5DB] w-full mt-3" />
+        </div>
+
+        {/* payment method */}
+        <div className="space-y-4 mt-10">
+          <p className="font-serif-display text-[18px] leading-5 text-black font-normal">
+            Payment method
+          </p>
+          <div className="h-px bg-black w-full mt-3" />
+
+          <div className="bg-[#527DFA] px-[28px] py-[18px] flex justify-center items-center rounded-[3px]">
+            <p className="text-[15px] text-surface-white font-sans leading-5 font-normal text-center">
+              After payment, you will be redirected to the information page.
+              Please accept T&Cs
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5">
+            <PaymentMethodOption
+              icon={CreditCardIcon}
+              isSelected={paymentMethod === "card"}
+              label="Credit Card"
+              onClick={() => {
+                setPaymentMethod("card");
+                setShowPaymentError(false);
+              }}
+            />
+            <PaymentMethodOption
+              icon={QrCodeIcon}
+              isSelected={paymentMethod === "qr"}
+              label="QR Code"
+              onClick={() => {
+                setPaymentMethod("qr");
+                setShowPaymentError(false);
+              }}
+            />
+          </div>
+
+          {paymentMethod === "card" ? (
+            <div className="mt-6 flex flex-col gap-2.5">
+              <Input
+                label="Cardholder Name"
+                value={cardholderName}
+                onChange={(value) => {
+                  setCardholderName(value);
+                  setShowPaymentError(false);
+                }}
+                placeholder="Cardholder Name"
+              />
+
+              <Input
+                label="Card Number"
+                variant="cardNumber"
+                value={cardNumber}
+                onChange={(value) => {
+                  setCardNumber(value);
+                  setShowPaymentError(false);
+                }}
+              />
+
+              <div className="grid grid-cols-2 gap-[14px]">
+                <Input
+                  label="Expiry Date"
+                  variant="expiry"
+                  value={expiryDate}
+                  onChange={(value) => {
+                    setExpiryDate(value);
+                    setShowPaymentError(false);
+                  }}
+                />
+                <Input
+                  label="CVV"
+                  variant="cvv"
+                  value={cvv}
+                  onChange={(value) => {
+                    setCvv(value);
+                    setShowPaymentError(false);
+                  }}
+                  trailingIcon={<SecurityCodeIcon />}
+                />
+              </div>
+            </div>
+          ) : (
+            <MockQrCode
+              value={`${selectedPlan.id}-${selectedPlan.period}-${selectedPlan.price}`}
+            />
+          )}
+
+          {showPaymentError && (
+            <p className="text-center font-sans text-[15px] font-normal leading-5 text-[#ff0000]">
+              Please complete payment information before continuing.
+            </p>
+          )}
+
+          <CustomButton
+            title="Confirm Payment"
+            onClick={handleConfirmPayment}
           />
         </div>
       </div>

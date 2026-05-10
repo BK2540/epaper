@@ -49,7 +49,7 @@ describe("Input", () => {
 
     await userEvent.type(screen.getByLabelText("Card Number"), "4111abcd1111222233334444");
 
-    expect(handleChange).toHaveBeenLastCalledWith("4111 1111 2222 3333 444");
+    expect(handleChange).toHaveBeenLastCalledWith("4111 1111 2222 3333");
   });
 
   it("formats expiry date as month and year", async () => {

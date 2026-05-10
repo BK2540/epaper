@@ -3,6 +3,7 @@ import { useState } from "react";
 import CustomButton from "./CustomButton";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
+import { useSubscription } from "@/context/subscription";
 
 type SubscribeProps = {
   contents: Subscribe[];
@@ -75,6 +76,7 @@ const SubscribeCard = ({ checked, content, onToggle }: SubscribeCardProps) => {
 
 const SubscribeSection = ({ contents }: SubscribeProps) => {
   const navigate = useNavigate();
+  const { selectPlan } = useSubscription();
   const [selectedId, setSelectedId] = useState<string>("");
   const [showPlanError, setShowPlanError] = useState(false);
   const [isSubscribeButtonClicked, setIsSubscribeButtonClicked] =
@@ -87,6 +89,15 @@ const SubscribeSection = ({ contents }: SubscribeProps) => {
       return;
     }
 
+    const selectedPlan = contents.find((content) => content.id === selectedId);
+
+    if (!selectedPlan) {
+      setShowPlanError(true);
+      setIsSubscribeButtonClicked(false);
+      return;
+    }
+
+    selectPlan(selectedPlan);
     setIsSubscribeButtonClicked(true);
     setTimeout(() => {
       navigate("/payment");
@@ -117,7 +128,7 @@ const SubscribeSection = ({ contents }: SubscribeProps) => {
 
       <div className="flex flex-col gap-2.5 items-center">
         {showPlanError && (
-          <p className="text-center font-sans text-[15px] font-normal leading-5 text-red-600">
+          <p className="text-center font-sans text-[15px] font-normal leading-5 text-[#ff0000]">
             No plan selected. Please choose one to continue.
           </p>
         )}

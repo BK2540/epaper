@@ -6,6 +6,7 @@ type ButtonType = {
   variant?: "solid" | "outline";
   onClick?: () => void;
   type?: "button" | "submit" | "reset" | undefined;
+  font?: "sans" | "serif";
 };
 
 const CustomButton = ({
@@ -14,6 +15,7 @@ const CustomButton = ({
   variant = "solid",
   onClick,
   type,
+  font = "serif",
 }: ButtonType) => {
   const variantClass =
     variant === "outline"
@@ -27,7 +29,7 @@ const CustomButton = ({
       transition={{ type: "spring", stiffness: 320, damping: 28 }}
       type={type ? type : "button"}
       onClick={onClick}
-      className={`${size === "small" ? "h-10 text-[15px] leading-5 px-5" : "h-12.5 text-xl leading-5 px-18"} ${variantClass} cursor-pointer rounded-[5px] flex justify-center items-center font-['DM_Serif_Text'] min-w-26`}
+      className={`${size === "small" ? "h-10 text-[15px] leading-5 px-5" : "h-12.5 text-base md:text-xl leading-5 md:px-18"} ${variantClass} w-full cursor-pointer rounded-[5px] flex justify-center items-center ${font === "sans" ? "font-sans" : "font-serif-text"}  font-normal min-w-26`}
     >
       {title}
     </motion.button>

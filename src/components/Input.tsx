@@ -3,7 +3,7 @@ import type { ChangeEvent, InputHTMLAttributes, ReactNode } from "react";
 type InputVariant = "text" | "cardNumber" | "expiry" | "cvv";
 
 type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> & {
-  label: string;
+  label?: string;
   variant?: InputVariant;
   onChange?: (value: string) => void;
   trailingIcon?: ReactNode;
@@ -13,7 +13,7 @@ const formatValue = (value: string, variant: InputVariant) => {
   if (variant === "cardNumber") {
     return value
       .replace(/\D/g, "")
-      .slice(0, 19)
+      .slice(0, 16)
       .replace(/(.{4})/g, "$1 ")
       .trim();
   }
@@ -77,6 +77,7 @@ const Input = ({
   ...props
 }: InputProps) => {
   const variantProps = getInputProps(variant);
+  const inputLabel = label ?? props["aria-label"] ?? props.placeholder;
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatValue(event.target.value, variant);
@@ -89,13 +90,14 @@ const Input = ({
     <label
       className={`block font-['DM_Sans'] text-[13px] leading-5 text-black ${className}`}
     >
-      <span className="mb-3 block">{label}</span>
+      {label && <span className="mb-3 block">{label}</span>}
       <span className="relative block">
         <input
           {...variantProps}
           {...props}
+          aria-label={label ? props["aria-label"] : inputLabel}
           onChange={handleChange}
-          className="h-14 w-full rounded-[3px] border border-neutral-300 bg-surface-white px-3.75 text-[13px] leading-5 text-black outline-none transition-colors placeholder:text-[#757575] focus:border-neutral-600"
+          className="h-10 w-full rounded-[3px] border border-neutral-300 bg-surface-white px-3.75 text-[13px] leading-5 text-black outline-none transition-colors placeholder:text-[#757575] focus:border-neutral-600"
         />
         {trailingIcon && (
           <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-neutral-600">
