@@ -6,7 +6,7 @@ import epaper1 from "@/assets/epaper_01.jpg";
 import epaper2 from "@/assets/epaper_02.jpg";
 import epaper3 from "@/assets/epaper_03.jpg";
 import digitalImage from "@/assets/digital01.png";
-import newspaperFormat from "@/assets/newspaper_format.png";
+import newspaperFormat from "@/assets/newspaper_format2.png";
 
 export type HomeProduct = {
   id: string;

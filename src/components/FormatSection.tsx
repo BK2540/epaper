@@ -27,11 +27,11 @@ const FormatSection = ({ formats }: FormatProps) => {
               key={format.id}
               className={`flex flex-col items-center px-[72px] py-10 text-center ${cardBackgroundClass[format.backgroundColor]}`}
             >
-              <div className="flex w-full items-center justify-center">
+              <div className="flex w-full items-center justify-center h-[79px]">
                 <img
                   src={format.mainImage}
                   alt={format.title}
-                  className={`object-contain ${format.id === "print" ? "h-[99px]" : "h-[68px]"} `}
+                  className={`object-contain ${format.id === "print" ? "h-[79px]" : "h-[68px]"} `}
                 />
               </div>
 

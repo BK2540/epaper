@@ -11,6 +11,10 @@ Responsive React implementation of a Bangkok Post Epaper subscription journey. T
 - Motion
 - Vitest and Testing Library
 
+## Production URL
+
+The app is deployed at: https://epaper.nuttida-project.com
+
 ## Getting Started
 
 Install dependencies:
@@ -74,6 +78,10 @@ GitHub Actions runs lint, tests, and production build on pushes to `main`/`maste
 
 - Replace mocked payment with a real payment gateway and server-confirmed receipt.
 - Store receipt/order details in a backend so confirmation pages survive refreshes without fallback data.
-- Add authentication for user to sign up / sign in
+- Add authentication for user to sign up / sign in and also manage subscribe and profile.
 - Add stronger form validation for card expiry, masked card display, and promotion code errors.
 - Add end-to-end coverage for the full subscription journey.
+- Add email system to notify subscriber about update, renew payment and after completed payment.
+- Add a feature that allows subscribers to highlight lines or sections in the Epaper, similar to highlighting passages in a book.
+- Add a saved articles page where subscribers can bookmark articles and easily return to them later.
+- Add a daily news summary feature so subscribers can catch up on the day’s news more quickly.
