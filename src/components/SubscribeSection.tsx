@@ -76,6 +76,23 @@ const SubscribeCard = ({ checked, content, onToggle }: SubscribeCardProps) => {
 const SubscribeSection = ({ contents }: SubscribeProps) => {
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string>("");
+  const [showPlanError, setShowPlanError] = useState(false);
+  const [isSubscribeButtonClicked, setIsSubscribeButtonClicked] =
+    useState(false);
+
+  const handleSubscribe = () => {
+    if (!selectedId) {
+      setShowPlanError(true);
+      setIsSubscribeButtonClicked(false);
+      return;
+    }
+
+    setIsSubscribeButtonClicked(true);
+    setTimeout(() => {
+      navigate("/payment");
+    }, 600);
+  };
+
   return (
     <div
       id="subscribe"
@@ -88,22 +105,29 @@ const SubscribeSection = ({ contents }: SubscribeProps) => {
             key={content.id}
             checked={selectedId === content.id}
             content={content}
-            onToggle={() =>
+            onToggle={() => {
+              setShowPlanError(false);
               setSelectedId((currentId) =>
                 currentId === content.id ? "" : content.id,
-              )
-            }
+              );
+            }}
           />
         ))}
       </div>
 
       <div className="flex flex-col gap-2.5 items-center">
+        {showPlanError && (
+          <p className="text-center font-sans text-[15px] font-normal leading-5 text-red-600">
+            No plan selected. Please choose one to continue.
+          </p>
+        )}
         <CustomButton
           title="Subscribe now"
-          onClick={() => navigate("/payment")}
+          variant={isSubscribeButtonClicked ? "outline" : "solid"}
+          onClick={handleSubscribe}
         />
         <p className="text-center font-sans text-[13px] font-normal leading-5 text-neutral-700">
-          You can cancel anythime
+          You can cancel anytime
         </p>
       </div>
     </div>

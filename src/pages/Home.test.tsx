@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import Home from "./Home";
 
@@ -24,6 +24,31 @@ const renderHome = () => {
   return render(
     <MemoryRouter>
       <Home />
+    </MemoryRouter>,
+  );
+};
+
+const LocationDisplay = () => {
+  const location = useLocation();
+
+  return <div data-testid="current-path">{location.pathname}</div>;
+};
+
+const renderHomeWithRoutes = () => {
+  return render(
+    <MemoryRouter initialEntries={["/"]}>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Home />
+              <LocationDisplay />
+            </>
+          }
+        />
+        <Route path="/payment" element={<LocationDisplay />} />
+      </Routes>
     </MemoryRouter>,
   );
 };
@@ -74,6 +99,24 @@ describe("Home", () => {
 
     await user.click(yearlyPlan);
     expect(yearlyPlan).not.toBeChecked();
+  });
+
+  // Verifies Subscribe now blocks payment navigation until a plan is selected.
+  it("shows a plan selection error and keeps users on Home when no plan is selected", async () => {
+    const user = userEvent.setup();
+    renderHomeWithRoutes();
+
+    const subscribeButton = screen.getByRole("button", {
+      name: /subscribe now/i,
+    });
+
+    await user.click(subscribeButton);
+
+    expect(
+      screen.getByText(/no plan selected\. please choose one to continue\./i),
+    ).toBeInTheDocument();
+    expect(subscribeButton).toHaveClass("bg-surface-white", "text-black");
+    expect(screen.getByTestId("current-path")).toHaveTextContent("/");
   });
 
   // Verifies the Read Epaper carousel controls update the displayed feature.
