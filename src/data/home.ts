@@ -5,9 +5,8 @@ import promotion2Mobile from "@/assets/img-promotion2_mobi.jpg";
 import epaper1 from "@/assets/epaper_01.jpg";
 import epaper2 from "@/assets/epaper_02.jpg";
 import epaper3 from "@/assets/epaper_03.jpg";
-import newspaperImage from "@/assets/newspaper.png";
-import truckImage from "@/assets/truck.png";
 import digitalImage from "@/assets/digital01.png";
+import newspaperFormat from "@/assets/newspaper_format.png";
 
 export type HomeProduct = {
   id: string;
@@ -321,8 +320,8 @@ export const formatPlan: Format[] = [
     subtitle: "Thailand Only",
     description:
       "Get the Bangkok Post delivered to your home in Bangkok and enjoy the classic print reading experience.",
-    mainImage: newspaperImage,
-    subImage: truckImage,
+    mainImage: newspaperFormat,
+    // subImage: truckImage,
     backgroundColor: "neutral",
     buttons: [
       {

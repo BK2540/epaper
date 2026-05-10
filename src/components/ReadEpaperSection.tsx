@@ -129,10 +129,10 @@ const ReadEpaperSection = ({ contents }: EpaperProps) => {
                   whileTap={{ scale: 0.9 }}
                   animate={{ scale: isActive ? 1.2 : 1 }}
                   transition={{ type: "spring", stiffness: 420, damping: 24 }}
-                  className={`rounded-full transition-colors ${
+                  className={`rounded-full transition-colors h-2.5 w-2.5 ${
                     isActive
-                      ? "h-4 w-4 md:h-5 md:w-5 bg-black"
-                      : "h-4 w-4 md:h-4 md:w-4 bg-neutral-500 hover:bg-neutral-600"
+                      ? " bg-black"
+                      : " bg-neutral-500 hover:bg-neutral-600"
                   }`}
                 />
               );

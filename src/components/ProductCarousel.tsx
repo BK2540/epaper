@@ -96,7 +96,7 @@ const ProductCarousel = ({ products }: ProductCarouselProps) => {
                 aria-label={`Show promotion ${index + 1}`}
                 aria-current={isActive ? "true" : undefined}
                 onClick={() => setActiveIndex(index)}
-                className={`h-3.5 w-3.5 rounded-full transition-colors ${
+                className={`h-2.5 w-2.5 rounded-full transition-colors ${
                   isActive ? "bg-black" : "bg-neutral-500 hover:bg-neutral-600"
                 }`}
               />
