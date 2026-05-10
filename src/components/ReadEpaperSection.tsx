@@ -84,9 +84,9 @@ const ReadEpaperSection = ({ contents }: EpaperProps) => {
       id="epaper"
       className="flex h-full w-full flex-col items-center gap-[58px] bg-surface-white px-6 pt-[60px] pb-[107px] xl:pl-[95px] xl:pr-[91px] "
     >
-      <h1 className="text-center font-serif-display text-[28px] leading-[32px] font-normal text-black md:text-[32px] md:leading-[42px]">
+      <h2 className="text-center font-serif-display text-[28px] leading-[32px] font-normal text-black md:text-[32px] md:leading-[42px]">
         There's a better way to experience the <br /> Bangkok Post Epaper
-      </h1>
+      </h2>
 
       {/* small screen */}
       <div

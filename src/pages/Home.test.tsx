@@ -187,7 +187,7 @@ describe("Home", () => {
     ).toHaveLength(2);
     expect(
       within(formatSection as HTMLElement).getByRole("link", {
-        name: /whare to find us/i,
+        name: /where to find us/i,
       }),
     ).toBeInTheDocument();
   });

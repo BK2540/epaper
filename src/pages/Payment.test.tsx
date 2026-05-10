@@ -69,7 +69,7 @@ describe("Payment", () => {
       "/#subscribe",
     );
 
-    expect(screen.getByPlaceholderText(/use redeem/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/promo code/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /apply/i })).toBeInTheDocument();
     expect(screen.queryByText(/discount:/i)).not.toBeInTheDocument();
     expect(screen.getByText(/total/i)).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe("Payment", () => {
     const user = userEvent.setup();
     renderPayment();
 
-    await user.type(screen.getByPlaceholderText(/use redeem/i), "redeem");
+    await user.type(screen.getByPlaceholderText(/promo code/i), "EPAPER10");
     await user.click(screen.getByRole("button", { name: /apply/i }));
 
     expect(screen.getByText(/discount:/i)).toBeInTheDocument();
@@ -110,8 +110,8 @@ describe("Payment", () => {
     const user = userEvent.setup();
     renderPayment();
 
-    const redeemInput = screen.getByPlaceholderText(/use redeem/i);
-    await user.type(redeemInput, "redeem");
+    const redeemInput = screen.getByPlaceholderText(/promo code/i);
+    await user.type(redeemInput, "EPAPER10");
     await user.click(screen.getByRole("button", { name: /apply/i }));
     expect(screen.getByText(/discount:/i)).toBeInTheDocument();
 
@@ -154,6 +154,7 @@ describe("Payment", () => {
     expect(
       screen.getByRole("button", { name: /processing payment/i }),
     ).toBeDisabled();
+    expect(screen.getByRole("status", { name: /loading/i })).toBeInTheDocument();
     expect(await screen.findByText(/payment successful/i)).toBeInTheDocument();
     expect(screen.getAllByText(/account & receipt/i)[0].closest("li")).toHaveAttribute(
       "aria-current",
@@ -175,7 +176,7 @@ describe("Payment", () => {
     await user.click(screen.getByRole("button", { name: /qr code/i }));
 
     expect(screen.getByLabelText(/mock qr code/i)).toBeInTheDocument();
-    expect(screen.getByText(/this is mock qr code/i)).toBeInTheDocument();
+    expect(screen.getByText(/scan this mock qr code/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/cardholder name/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/card number/i)).not.toBeInTheDocument();
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { HomeProduct } from "@/data/home";
 
 type ProductCarouselProps = {
@@ -13,15 +13,15 @@ const ProductCarousel = ({ products }: ProductCarouselProps) => {
   const dragStartX = useRef<number | null>(null);
   const activeProduct = products[activeIndex];
 
-  const goToNextSlide = () => {
+  const goToNextSlide = useCallback(() => {
     setActiveIndex((currentIndex) => (currentIndex + 1) % products.length);
-  };
+  }, [products.length]);
 
-  const goToPreviousSlide = () => {
+  const goToPreviousSlide = useCallback(() => {
     setActiveIndex((currentIndex) =>
       currentIndex === 0 ? products.length - 1 : currentIndex - 1,
     );
-  };
+  }, [products.length]);
 
   useEffect(() => {
     if (products.length <= 1) {
@@ -31,7 +31,7 @@ const ProductCarousel = ({ products }: ProductCarouselProps) => {
     const intervalId = window.setInterval(goToNextSlide, AUTO_SLIDE_DELAY);
 
     return () => window.clearInterval(intervalId);
-  }, [products.length]);
+  }, [goToNextSlide, products.length]);
 
   if (!activeProduct) {
     return null;

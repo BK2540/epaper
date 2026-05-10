@@ -14,6 +14,7 @@ import {
 const Home = () => {
   return (
     <>
+      <h1 className="sr-only">Bangkok Post Epaper subscriptions</h1>
       <ProductCarousel products={ourProducts} />
       <SubscribeSection contents={subscribePlan} />
       <ReadEpaperSection contents={epaper} />

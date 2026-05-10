@@ -15,9 +15,9 @@ const FaqSection = ({ contents }: FaqProps) => {
       className="w-full bg-surface-cream px-6 pt-12 pb-16 font-sans"
     >
       <div className="mx-auto max-w-[680px]">
-        <h1 className="text-center font-serif-display text-[28px] leading-[32px] font-normal text-black md:text-[32px] md:leading-[42px]">
+        <h2 className="text-center font-serif-display text-[28px] leading-[32px] font-normal text-black md:text-[32px] md:leading-[42px]">
           FAQ
-        </h1>
+        </h2>
 
         <div className="border-t border-neutral-500">
           {contents.map((content, index) => {

@@ -1,73 +1,79 @@
-# React + TypeScript + Vite
+# Bangkok Post Epaper Subscription Flow
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Responsive React implementation of a Bangkok Post Epaper subscription journey. The app covers plan selection, mocked payment, promotion code handling, progress tracking, and an account/receipt confirmation screen.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 with TypeScript
+- Vite
+- React Router
+- Tailwind CSS
+- Motion
+- Vitest and Testing Library
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Install dependencies:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Run the development server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Run tests:
+
+```bash
+npm run test:run
+```
+
+Run lint:
+
+```bash
+npm run lint
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+## Development Approach
+
+The implementation is organized around a small set of reusable UI and state primitives:
+
+- Subscription plan state is managed through `SubscriptionProvider` and persisted to `localStorage`.
+- Checkout progress is shared through `PaymentStepIndicator`, so Payment and Receipt render the same step model with different current states.
+- Payment is intentionally mocked, but it still behaves like a real flow: validation blocks incomplete card details, processing disables the submit button, a loading spinner is shown, and successful payment navigates to the receipt page.
+- Receipt data is passed through route state and can fall back to the selected plan if the user refreshes the confirmation page.
+
+## Optimizations
+
+- Route-level code splitting is handled with `React.lazy` and `Suspense`.
+- Carousel interval callbacks are stabilized to satisfy hook dependency rules.
+- Stored subscription data is shape-validated before the app trusts it.
+- Tests cover the critical user paths: plan selection, payment validation, success navigation, receipt rendering, and checkout progress state.
+
+## Mocked Behavior
+
+- Card payment succeeds when all fields are completed.
+- QR payment succeeds after confirmation.
+- `EPAPER10` applies a 10% promotional discount.
+- Receipt order numbers are generated client-side for demo purposes.
+
+## CI
+
+GitHub Actions runs lint, tests, and production build on pushes to `main`/`master` and on pull requests.
+
+## Future Improvements
+
+- Replace mocked payment with a real payment gateway and server-confirmed receipt.
+- Store receipt/order details in a backend so confirmation pages survive refreshes without fallback data.
+- Add authentication for user to sign up / sign in
+- Add stronger form validation for card expiry, masked card display, and promotion code errors.
+- Add end-to-end coverage for the full subscription journey.

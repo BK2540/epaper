@@ -3,12 +3,17 @@ import Input from "@/components/Input";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useSubscription } from "@/context/subscription";
 import CustomButton from "@/components/CustomButton";
+import Loading from "@/components/Loading";
 import PaymentStepIndicator from "@/components/PaymentStepIndicator";
 import CreditCardIcon from "@/assets/icon/credit.svg";
 import QrCodeIcon from "@/assets/icon/qr.svg";
 import type { ReceiptDetails } from "./Receipt";
 
 type PaymentMethod = "card" | "qr";
+
+const MOCK_PROMO_CODES: Record<string, number> = {
+  EPAPER10: 0.1,
+};
 
 const SecurityCodeIcon = () => {
   return (
@@ -101,7 +106,7 @@ const MockQrCode = ({ value }: { value: string }) => {
         )}
       </svg>
       <p className="mt-4 text-center font-sans text-[13px] leading-5 text-neutral-700">
-        this is mock QR code.
+        Scan this mock QR code to continue.
       </p>
     </div>
   );
@@ -133,7 +138,9 @@ const Payment = () => {
     return <Navigate to="/" replace />;
   }
 
-  const discount = isRedeemApplied ? selectedPlan.price * 0.1 : 0;
+  const appliedDiscountRate =
+    MOCK_PROMO_CODES[redeemCode.trim().toUpperCase()] ?? 0;
+  const discount = isRedeemApplied ? selectedPlan.price * appliedDiscountRate : 0;
   const total = selectedPlan.price - discount;
 
   const completePayment = () => {
@@ -155,7 +162,7 @@ const Payment = () => {
   };
 
   const handleApplyRedeemCode = () => {
-    setIsRedeemApplied(redeemCode.trim().toLowerCase() === "redeem");
+    setIsRedeemApplied(redeemCode.trim().toUpperCase() in MOCK_PROMO_CODES);
   };
 
   const handleConfirmPayment = () => {
@@ -206,7 +213,7 @@ const Payment = () => {
               {selectedPlan.price.toLocaleString()} Baht for{" "}
               {selectedPlan.period}
               <br />
-              You can cancel anythime
+              You can cancel anytime
             </p>
           </div>
 
@@ -228,7 +235,7 @@ const Payment = () => {
                   setRedeemCode(value);
                   setIsRedeemApplied(false);
                 }}
-                placeholder="use redeem"
+                placeholder="Promo code"
               />
             </div>
 
@@ -369,6 +376,7 @@ const Payment = () => {
             onClick={handleConfirmPayment}
             disabled={isProcessingPayment}
           />
+          {isProcessingPayment && <Loading />}
         </div>
       </div>
     </section>

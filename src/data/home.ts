@@ -118,7 +118,7 @@ export const subscribePlan: Subscribe[] = [
   },
   {
     id: "6",
-      period: "Epaper + Print Bundle\n12 Months",
+    period: "Epaper + Print Bundle\n12 Months",
     price: 12850,
     addition: "Plus 30 free back issues",
   },
@@ -329,7 +329,7 @@ export const formatPlan: Format[] = [
         href: "#",
       },
       {
-        label: "Whare to find us",
+        label: "Where to find us",
         href: "#",
       },
     ],

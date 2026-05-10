@@ -16,10 +16,10 @@ const FormatSection = ({ formats }: FormatProps) => {
       className="w-full bg-surface-white px-6 pt-12 pb-16 font-sans"
     >
       <div className="mx-auto max-w-[690px] xl:max-w-[1280px]">
-        <h1 className="mx-auto xl:max-w-[760px] text-center font-serif-display text-[28px] leading-[32px] font-normal text-black md:text-[32px] md:leading-[42px]">
+        <h2 className="mx-auto xl:max-w-[760px] text-center font-serif-display text-[28px] leading-[32px] font-normal text-black md:text-[32px] md:leading-[42px]">
           Choose the format you prefer, and enjoy even more with your
           subscription.
-        </h1>
+        </h2>
 
         <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-2 ">
           {formats.map((format) => (
