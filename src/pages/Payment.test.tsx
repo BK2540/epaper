@@ -8,6 +8,7 @@ import {
   type SubscribePlan,
 } from "@/context/subscription";
 import Payment from "./Payment";
+import Receipt from "./Receipt";
 
 const mockPlan: SubscribePlan = {
   id: "4",
@@ -37,6 +38,7 @@ const renderPayment = (plan: SubscribePlan | null = mockPlan) => {
         <Routes>
           <Route path="/" element={<LocationDisplay />} />
           <Route path="/payment" element={<Payment />} />
+          <Route path="/receipt" element={<Receipt />} />
         </Routes>
       </SubscriptionProvider>
     </MemoryRouter>,
@@ -64,7 +66,7 @@ describe("Payment", () => {
     expect(screen.getAllByText(/4,700 baht/i)).not.toHaveLength(0);
     expect(screen.getByRole("link", { name: /change plans/i })).toHaveAttribute(
       "href",
-      "/",
+      "/#subscribe",
     );
 
     expect(screen.getByPlaceholderText(/use redeem/i)).toBeInTheDocument();
@@ -130,8 +132,8 @@ describe("Payment", () => {
     ).toBeInTheDocument();
   });
 
-  // Verifies completing all card fields clears the payment validation error.
-  it("clears the validation message after users complete the card form", async () => {
+  // Verifies completing all card fields shows a pending state, then routes to Account & Receipt.
+  it("shows processing state and routes to the receipt after users complete the card form", async () => {
     const user = userEvent.setup();
     renderPayment();
 
@@ -149,6 +151,20 @@ describe("Payment", () => {
     expect(
       screen.queryByText(/please complete payment information before continuing/i),
     ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /processing payment/i }),
+    ).toBeDisabled();
+    expect(await screen.findByText(/payment successful/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/account & receipt/i)[0].closest("li")).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+    expect(screen.getByText(/^payment$/i).closest("li")).not.toHaveAttribute(
+      "aria-current",
+      "step",
+    );
+    expect(screen.getByText(/epaper 12 months/i)).toBeInTheDocument();
+    expect(screen.getByText(/credit card/i)).toBeInTheDocument();
   });
 
   // Verifies QR checkout swaps the card form for a mock QR code and does not require card fields.
@@ -167,6 +183,8 @@ describe("Payment", () => {
     expect(
       screen.queryByText(/please complete payment information before continuing/i),
     ).not.toBeInTheDocument();
+    expect(await screen.findByText(/payment successful/i)).toBeInTheDocument();
+    expect(screen.getByText(/qr code/i)).toBeInTheDocument();
   });
 
   // Verifies direct visits to Payment without a selected plan are redirected back to Home.

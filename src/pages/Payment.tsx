@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Input from "@/components/Input";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useSubscription } from "@/context/subscription";
-import { Check } from "lucide-react";
 import CustomButton from "@/components/CustomButton";
+import PaymentStepIndicator from "@/components/PaymentStepIndicator";
 import CreditCardIcon from "@/assets/icon/credit.svg";
 import QrCodeIcon from "@/assets/icon/qr.svg";
+import type { ReceiptDetails } from "./Receipt";
 
 type PaymentMethod = "card" | "qr";
 
@@ -106,66 +107,10 @@ const MockQrCode = ({ value }: { value: string }) => {
   );
 };
 
-const paymentSteps = [
-  { id: "select-plan", label: "Select plan", status: "completed" },
-  { id: "payment", label: "Payment", status: "current" },
-  { id: "account-receipt", label: "Account & Receipt", status: "upcoming" },
-] as const;
-
-const PaymentStepIndicator = () => {
-  return (
-    <ol
-      aria-label="Payment progress"
-      className="relative mt-8 mb-9 grid w-full grid-cols-3"
-    >
-      <span
-        aria-hidden="true"
-        className="absolute left-[11px] right-[11px] top-[11px] h-px bg-blue-600"
-      />
-
-      {paymentSteps.map((step, index) => {
-        const isCompleted = step.status === "completed";
-        const isCurrent = step.status === "current";
-        const alignment =
-          index === 0
-            ? "items-start text-left"
-            : index === paymentSteps.length - 1
-              ? "items-end text-right"
-              : "items-center text-center";
-
-        return (
-          <li
-            key={step.id}
-            className={`relative z-10 flex flex-col gap-2 ${alignment}`}
-            aria-current={isCurrent ? "step" : undefined}
-          >
-            <span
-              className={`flex h-[22px] w-[22px] items-center justify-center rounded-full ${
-                isCompleted ? "bg-black" : "bg-blue-600"
-              }`}
-            >
-              {(isCompleted || isCurrent) && (
-                <Check
-                  aria-hidden="true"
-                  className="h-3.5 w-3.5 text-surface-white"
-                  strokeWidth={3}
-                />
-              )}
-            </span>
-            <span
-              className={`font-sans text-[11px] leading-5 text-black wrap-break-word ${step.id === "select-plan" && "-translate-x-3"} ${step.id === "account-receipt" && "md:translate-x-7"}`}
-            >
-              {step.label}
-            </span>
-          </li>
-        );
-      })}
-    </ol>
-  );
-};
-
 const Payment = () => {
   const { selectedPlan } = useSubscription();
+  const navigate = useNavigate();
+  const paymentTimeoutRef = useRef<number | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [redeemCode, setRedeemCode] = useState("");
   const [isRedeemApplied, setIsRedeemApplied] = useState(false);
@@ -174,6 +119,15 @@ const Payment = () => {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [showPaymentError, setShowPaymentError] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (paymentTimeoutRef.current) {
+        window.clearTimeout(paymentTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (!selectedPlan) {
     return <Navigate to="/" replace />;
@@ -182,13 +136,35 @@ const Payment = () => {
   const discount = isRedeemApplied ? selectedPlan.price * 0.1 : 0;
   const total = selectedPlan.price - discount;
 
+  const completePayment = () => {
+    const receipt: ReceiptDetails = {
+      plan: selectedPlan,
+      paymentMethod,
+      discount,
+      total,
+      orderNumber: `EP-${Date.now().toString().slice(-8)}`,
+      paidAt: new Date().toISOString(),
+    };
+
+    setShowPaymentError(false);
+    setIsProcessingPayment(true);
+
+    paymentTimeoutRef.current = window.setTimeout(() => {
+      navigate("/receipt", { state: { receipt } });
+    }, 500);
+  };
+
   const handleApplyRedeemCode = () => {
     setIsRedeemApplied(redeemCode.trim().toLowerCase() === "redeem");
   };
 
   const handleConfirmPayment = () => {
+    if (isProcessingPayment) {
+      return;
+    }
+
     if (paymentMethod === "qr") {
-      setShowPaymentError(false);
+      completePayment();
       return;
     }
 
@@ -198,7 +174,12 @@ const Payment = () => {
       expiryDate.length === 7 &&
       cvv.length === 3;
 
-    setShowPaymentError(!isCardFormCompleted);
+    if (!isCardFormCompleted) {
+      setShowPaymentError(true);
+      return;
+    }
+
+    completePayment();
   };
 
   return (
@@ -208,7 +189,7 @@ const Payment = () => {
           Payment Information
         </p>
 
-        <PaymentStepIndicator />
+        <PaymentStepIndicator currentStep="payment" />
 
         {/* Selected Plan */}
         <div className="mt-10">
@@ -217,8 +198,8 @@ const Payment = () => {
           </p>
           <div className="h-px bg-black w-full mt-3" />
 
-          <div className="mt-[22px] bg-[#EDF2FE] w-full flex flex-col items-center py-5 mb-6">
-            <p className="font-serif-display text-[18px] leading-5 text-black font-normal">
+          <div className="mt-[22px] bg-[#EDF2FE] w-full flex flex-col items-center py-5 mb-6 px-4">
+            <p className="font-serif-display text-[18px] leading-5 text-black font-normal text-center">
               Epaper {selectedPlan.period}
             </p>
             <p className="font-sans text-[13px] leading-5 text-[#6e6e6e] font-normal mt-2 text-center">
@@ -230,7 +211,7 @@ const Payment = () => {
           </div>
 
           <a
-            href="/"
+            href="/#subscribe"
             className="font-sans text-[13px] leading-5 text-[#346AEA] font-normal text-center underline"
           >
             Change plans
@@ -238,8 +219,8 @@ const Payment = () => {
 
           {/* redeem code */}
           <div className="h-px bg-[#D1D5DB] w-full mt-6 mb-3" />
-          <div className="flex items-center gap-2.5">
-            <div className="w-full">
+          <div className="flex w-full items-center gap-2.5">
+            <div className="min-w-0 flex-1">
               <Input
                 // label="Cardholder Name"
                 value={redeemCode}
@@ -256,6 +237,7 @@ const Payment = () => {
               onClick={handleApplyRedeemCode}
               size="small"
               font="sans"
+              className="!w-[75px] !min-w-[75px] shrink-0 !px-0"
             />
           </div>
 
@@ -381,8 +363,11 @@ const Payment = () => {
           )}
 
           <CustomButton
-            title="Confirm Payment"
+            title={
+              isProcessingPayment ? "Processing payment..." : "Confirm Payment"
+            }
             onClick={handleConfirmPayment}
+            disabled={isProcessingPayment}
           />
         </div>
       </div>
